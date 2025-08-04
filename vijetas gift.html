@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Surprise</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Creepster&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Dancing Script', cursive;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Initial demure state */
+        .demure {
+            background: linear-gradient(135deg, #ffeef8, #f0e6ff, #e6f3ff);
+            color: #8b5a8c;
+        }
+
+        /* Cursed state */
+        .cursed {
+            background: #000000 !important;
+            color: #ff0000;
+            position: relative;
+        }
+
+        .cursed::before {
+            display: none;
+        }
+
+        .cursed::after {
+            display: none;
+        }
+
+        @keyframes flicker {
+            0% { 
+                filter: brightness(0.3) contrast(4) saturate(5) hue-rotate(-20deg) invert(0.1);
+                box-shadow: inset 0 0 200px #660000, inset 0 0 400px #330000;
+            }
+            100% { 
+                filter: brightness(2) contrast(6) saturate(8) hue-rotate(20deg) invert(0.05);
+                box-shadow: inset 0 0 300px #990000, inset 0 0 600px #660000;
+            }
+        }
+
+
+
+        @keyframes staticNoise {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.97; }
+        }
+
+        @keyframes screenDistort {
+            0%, 100% { transform: skewX(0deg) scaleY(1); }
+            25% { transform: skewX(0.1deg) scaleY(1.001); }
+            50% { transform: skewX(-0.1deg) scaleY(0.999); }
+            75% { transform: skewX(0.05deg) scaleY(1.0005); }
+        }
+
+        @keyframes scanlines {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
+        }
+
+        @keyframes shadowMovement {
+            0%, 100% { 
+                background-position: 0% 0%, 100% 100%;
+                opacity: 0.3;
+            }
+            50% { 
+                background-position: 100% 100%, 0% 0%;
+                opacity: 0.7;
+            }
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+            transition: all 0.5s ease;
+        }
+
+        .cursed .title {
+            font-family: 'Creepster', cursive;
+            color: #ff0000;
+            text-shadow: 
+                0 0 5px #ff0000,
+                0 0 10px #ff0000,
+                0 0 20px #ff0000,
+                0 0 40px #ff0000,
+                0 0 80px #ff0000,
+                2px 2px 0px #000000,
+                -2px -2px 0px #660000;
+            animation: 
+                violentShake 0.05s infinite, 
+                textGlitch 0.1s infinite,
+                colorShift 0.2s infinite,
+                textDistort 1s infinite;
+            filter: 
+                drop-shadow(0 0 30px #ff0000) 
+                drop-shadow(0 0 60px #cc0000)
+                contrast(3)
+                saturate(5);
+            z-index: 10;
+            position: relative;
+        }
+
+        @keyframes violentShake {
+            0% { transform: translateX(0) translateY(0) rotate(0deg) scaleX(1) scaleY(1); }
+            10% { transform: translateX(-8px) translateY(-6px) rotate(-3deg) scaleX(1.02) scaleY(0.98); }
+            20% { transform: translateX(7px) translateY(8px) rotate(2deg) scaleX(0.98) scaleY(1.03); }
+            30% { transform: translateX(-6px) translateY(-9px) rotate(-4deg) scaleX(1.01) scaleY(0.97); }
+            40% { transform: translateX(9px) translateY(5px) rotate(3deg) scaleX(0.99) scaleY(1.02); }
+            50% { transform: translateX(-7px) translateY(-4px) rotate(-2deg) scaleX(1.03) scaleY(0.99); }
+            60% { transform: translateX(5px) translateY(7px) rotate(4deg) scaleX(0.97) scaleY(1.01); }
+            70% { transform: translateX(-9px) translateY(6px) rotate(-3deg) scaleX(1.02) scaleY(0.98); }
+            80% { transform: translateX(8px) translateY(-7px) rotate(2deg) scaleX(0.98) scaleY(1.03); }
+            90% { transform: translateX(-4px) translateY(3px) rotate(-1deg) scaleX(1.01) scaleY(0.99); }
+            100% { transform: translateX(0) translateY(0) rotate(0deg) scaleX(1) scaleY(1); }
+        }
+
+        @keyframes colorShift {
+            0% { color: #ff0000; }
+            25% { color: #ff6666; }
+            50% { color: #cc0000; }
+            75% { color: #990000; }
+            100% { color: #ff0000; }
+        }
+
+        @keyframes textDistort {
+            0%, 100% { 
+                transform: perspective(100px) rotateX(0deg) rotateY(0deg);
+                letter-spacing: 1px;
+            }
+            25% { 
+                transform: perspective(100px) rotateX(2deg) rotateY(-1deg);
+                letter-spacing: 3px;
+            }
+            50% { 
+                transform: perspective(100px) rotateX(-1deg) rotateY(2deg);
+                letter-spacing: 0px;
+            }
+            75% { 
+                transform: perspective(100px) rotateX(1deg) rotateY(-2deg);
+                letter-spacing: 2px;
+            }
+        }
+
+        @keyframes textGlitch {
+            0%, 90% { 
+                transform: translateX(0);
+                opacity: 1;
+            }
+            92% { 
+                transform: translateX(-5px);
+                opacity: 0.8;
+                color: #ff6666;
+            }
+            94% { 
+                transform: translateX(5px);
+                opacity: 0.9;
+                color: #cc0000;
+            }
+            96% { 
+                transform: translateX(-3px);
+                opacity: 0.7;
+                color: #ff0000;
+            }
+            98% { 
+                transform: translateX(3px);
+                opacity: 1;
+                color: #990000;
+            }
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            z-index: 10;
+        }
+
+        .gift-box {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(45deg, #ffb3d9, #d9b3ff);
+            border: 4px solid #8b5a8c;
+            border-radius: 20px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(139, 90, 140, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+
+        .gift-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(139, 90, 140, 0.4);
+        }
+
+        .cursed .gift-box {
+            background: linear-gradient(45deg, #330000, #000000, #660000, #000000);
+            background-size: 400% 400%;
+            border: 4px solid #ff0000;
+            box-shadow: 
+                0 0 30px #ff0000,
+                0 0 60px #cc0000,
+                0 0 90px #990000,
+                inset 0 0 30px #ff0000;
+            animation: pulse 0.3s infinite alternate, boxGlitch 0.2s infinite, backgroundShift 3s infinite;
+        }
+
+        @keyframes pulse {
+            0% { 
+                transform: scale(1) rotate(0deg);
+                filter: brightness(0.8) saturate(2);
+            }
+            100% { 
+                transform: scale(1.08) rotate(1deg);
+                filter: brightness(1.3) saturate(3);
+            }
+        }
+
+        @keyframes boxGlitch {
+            0%, 95% { 
+                border-color: #ff0000;
+                transform: translateX(0);
+            }
+            96% { 
+                border-color: #00ff00;
+                transform: translateX(-2px);
+            }
+            97% { 
+                border-color: #0000ff;
+                transform: translateX(2px);
+            }
+            98% { 
+                border-color: #ffff00;
+                transform: translateX(-1px);
+            }
+            99% { 
+                border-color: #ff00ff;
+                transform: translateX(1px);
+            }
+        }
+
+        @keyframes backgroundShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .gift-box::before {
+            content: '🎁';
+            transition: all 0.3s ease;
+        }
+
+        .cursed .gift-box::before {
+            content: '💀';
+            animation: spin 1s infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .summon-button {
+            background: linear-gradient(45deg, #d9b3ff, #ffb3d9);
+            color: #8b5a8c;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            font-family: 'Dancing Script', cursive;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(139, 90, 140, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .summon-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 90, 140, 0.4);
+        }
+
+        .cursed .summon-button {
+            background: linear-gradient(45deg, #990000, #330000, #ff0000, #660000);
+            background-size: 400% 400%;
+            color: #ffffff;
+            font-family: 'Creepster', cursive;
+            border: 2px solid #ff0000;
+            box-shadow: 
+                0 0 20px #ff0000,
+                0 0 40px #cc0000,
+                0 0 60px #990000,
+                inset 0 0 20px rgba(255, 0, 0, 0.3);
+            animation: glow 0.3s infinite alternate, buttonGlitch 0.15s infinite, buttonShift 2s infinite;
+            text-shadow: 
+                0 0 5px #ff0000,
+                0 0 10px #ff0000,
+                0 0 15px #ff0000;
+        }
+
+        @keyframes glow {
+            0% { 
+                box-shadow: 
+                    0 0 20px #ff0000,
+                    0 0 40px #cc0000,
+                    0 0 60px #990000,
+                    inset 0 0 20px rgba(255, 0, 0, 0.3);
+                filter: brightness(1) saturate(2);
+            }
+            100% { 
+                box-shadow: 
+                    0 0 40px #ff0000,
+                    0 0 80px #cc0000,
+                    0 0 120px #990000,
+                    inset 0 0 40px rgba(255, 0, 0, 0.5);
+                filter: brightness(1.5) saturate(3);
+            }
+        }
+
+        @keyframes buttonGlitch {
+            0%, 90% { 
+                transform: translateX(0) translateY(0);
+                color: #ffffff;
+            }
+            92% { 
+                transform: translateX(-1px) translateY(-1px);
+                color: #ff6666;
+            }
+            94% { 
+                transform: translateX(1px) translateY(1px);
+                color: #cc0000;
+            }
+            96% { 
+                transform: translateX(-1px) translateY(1px);
+                color: #ffffff;
+            }
+            98% { 
+                transform: translateX(1px) translateY(-1px);
+                color: #ff0000;
+            }
+        }
+
+        @keyframes buttonShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .cursed-gif {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 500px;
+            height: 500px;
+            background: 
+                radial-gradient(circle at center, #000000 0%, #1a0000 50%, #000000 100%),
+                repeating-conic-gradient(from 0deg at center, #000000 0deg, #330000 45deg, #000000 90deg);
+            border: 8px solid #ff0000;
+            border-radius: 0;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15rem;
+            box-shadow: 
+                0 0 100px #ff0000,
+                0 0 200px #cc0000,
+                0 0 300px #990000,
+                inset 0 0 100px #660000;
+            filter: contrast(5) saturate(3);
+        }
+
+        .cursed-gif.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            animation: 
+                emerge 0.3s ease,
+                stare 0.5s infinite,
+                entityGlitch 0.1s infinite,
+                borderPulse 1s infinite,
+                shadowFlicker 0.2s infinite;
+        }
+
+        @keyframes emerge {
+            0% { 
+                transform: translate(-50%, -50%) scale(0) rotate(720deg);
+                filter: blur(20px) contrast(10) saturate(10);
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.5) rotate(360deg);
+                filter: blur(10px) contrast(8) saturate(8);
+            }
+            100% { 
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+                filter: contrast(5) saturate(3);
+            }
+        }
+
+        @keyframes stare {
+            0%, 70% { 
+                transform: translate(-50%, -50%) scale(1);
+                font-size: 15rem;
+            }
+            80% { 
+                transform: translate(-50%, -50%) scale(1.15);
+                font-size: 16rem;
+            }
+            90% { 
+                transform: translate(-50%, -50%) scale(1.05);
+                font-size: 15.5rem;
+            }
+            100% { 
+                transform: translate(-50%, -50%) scale(1.1);
+                font-size: 15.8rem;
+            }
+        }
+
+        @keyframes entityGlitch {
+            0%, 90% { 
+                content: '👁️';
+                color: #ff0000;
+                text-shadow: 0 0 20px #ff0000;
+            }
+            92% { 
+                content: '💀';
+                color: #ffffff;
+                text-shadow: 0 0 30px #ffffff;
+            }
+            94% { 
+                content: '👹';
+                color: #ff6666;
+                text-shadow: 0 0 25px #ff6666;
+            }
+            96% { 
+                content: '🔥';
+                color: #ff3300;
+                text-shadow: 0 0 35px #ff3300;
+            }
+            98% { 
+                content: '⚡';
+                color: #ffff00;
+                text-shadow: 0 0 40px #ffff00;
+            }
+        }
+
+        .cursed-gif::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            right: -20px;
+            bottom: -20px;
+            background: 
+                conic-gradient(from 0deg, #ff0000, #000000, #ff0000, #000000, #ff0000);
+            z-index: -1;
+            animation: rotate 2s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes borderPulse {
+            0%, 100% { 
+                border-color: #ff0000;
+                border-width: 8px;
+            }
+            50% { 
+                border-color: #ffffff;
+                border-width: 12px;
+            }
+        }
+
+        @keyframes shadowFlicker {
+            0%, 80% { 
+                box-shadow: 
+                    0 0 100px #ff0000,
+                    0 0 200px #cc0000,
+                    0 0 300px #990000,
+                    inset 0 0 100px #660000;
+            }
+            85% { 
+                box-shadow: 
+                    0 0 200px #ffffff,
+                    0 0 400px #ff0000,
+                    0 0 600px #cc0000,
+                    inset 0 0 200px #990000;
+            }
+            90% { 
+                box-shadow: 
+                    0 0 50px #ff0000,
+                    0 0 100px #cc0000,
+                    0 0 150px #990000,
+                    inset 0 0 50px #660000;
+            }
+        }
+
+        .crash-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            padding: 2rem;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            overflow: auto;
+            white-space: pre-line;
+        }
+
+        .crash-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .glitch-text {
+            animation: glitch 0.1s infinite;
+        }
+
+        @keyframes glitch {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-2px); }
+            40% { transform: translateX(2px); }
+            60% { transform: translateX(-1px); }
+            80% { transform: translateX(1px); }
+            100% { transform: translateX(0); }
+        }
+
+        @keyframes popupFloat {
+            0% { 
+                transform: translateX(0) translateY(0) rotate(0deg);
+                opacity: 0.9;
+            }
+            25% { 
+                transform: translateX(20px) translateY(-15px) rotate(1deg);
+                opacity: 1;
+            }
+            50% { 
+                transform: translateX(-10px) translateY(-30px) rotate(-0.5deg);
+                opacity: 0.95;
+            }
+            75% { 
+                transform: translateX(15px) translateY(-20px) rotate(0.8deg);
+                opacity: 1;
+            }
+            100% { 
+                transform: translateX(0) translateY(-10px) rotate(0deg);
+                opacity: 0.9;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Windows-style popup styling */
+        .windows-popup {
+            position: fixed;
+            width: 400px;
+            min-height: 200px;
+            background: #f0f0f0;
+            border: 2px outset #c0c0c0;
+            font-family: 'MS Sans Serif', sans-serif;
+            font-size: 11px;
+            z-index: 9999;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .windows-titlebar {
+            background: linear-gradient(90deg, #0054e3 0%, #0054e3 100%);
+            color: white;
+            padding: 2px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            font-weight: bold;
+            font-size: 11px;
+        }
+
+        .windows-title {
+            padding: 4px 8px;
+            flex-grow: 1;
+        }
+
+        .windows-controls {
+            display: flex;
+        }
+
+        .windows-close {
+            background: #c0c0c0;
+            border: 1px outset #c0c0c0;
+            width: 16px;
+            height: 14px;
+            font-size: 9px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 2px;
+        }
+
+        .windows-close:hover {
+            background: #e0e0e0;
+        }
+
+        .windows-close:active {
+            border: 1px inset #c0c0c0;
+        }
+
+        .windows-content {
+            padding: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: #f0f0f0;
+        }
+
+        .windows-icon {
+            font-size: 32px;
+            flex-shrink: 0;
+        }
+
+        .windows-message {
+            flex-grow: 1;
+            line-height: 1.3;
+            white-space: pre-line;
+            font-size: 11px;
+            color: #000;
+        }
+
+        .windows-buttons {
+            padding: 8px 16px 16px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            background: #f0f0f0;
+        }
+
+        .windows-btn {
+            background: #c0c0c0;
+            border: 1px outset #c0c0c0;
+            padding: 4px 16px;
+            font-size: 11px;
+            font-family: 'MS Sans Serif', sans-serif;
+            cursor: pointer;
+            min-width: 75px;
+        }
+
+        .windows-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .windows-btn:active {
+            border: 1px inset #c0c0c0;
+            background: #a0a0a0;
+        }
+
+        .windows-btn:focus {
+            outline: 1px dotted #000;
+            outline-offset: -3px;
+        }
+
+        @media (max-width: 768px) {
+            .title { font-size: 2rem; }
+            .gift-box { width: 150px; height: 150px; font-size: 3rem; }
+            .cursed-gif { width: 300px; height: 300px; font-size: 8rem; }
+            .windows-popup { width: 300px; font-size: 10px; }
+        }
+    </style>
+</head>
+<body class="demure">
+    <h1 class="title">🎂 Happy Birthday! 🎂</h1>
+    
+    <div class="container">
+        <div class="gift-box" id="giftBox"></div>
+        <button class="summon-button" id="summonButton">Click Here to Summon Your Gift</button>
+    </div>
+
+    <div class="cursed-gif" id="cursedGif">👁️</div>
+
+    <div class="crash-overlay" id="crashOverlay">
+        <div class="glitch-text" id="crashText"></div>
+    </div>
+
+    <!-- Birthday song audio -->
+    <audio id="birthdayAudio" loop>
+        <!-- Simple birthday melody using Web Audio API fallback -->
+    </audio>
+
+    <script>
+        let isActivated = false;
+        let crashTimer;
+
+        // Create simple birthday melody using Web Audio API
+        function createBirthdayMelody() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const notes = [
+                {freq: 261.63, duration: 0.5}, // C
+                {freq: 261.63, duration: 0.5}, // C
+                {freq: 293.66, duration: 1},   // D
+                {freq: 261.63, duration: 1},   // C
+                {freq: 349.23, duration: 1},   // F
+                {freq: 329.63, duration: 2},   // E
+            ];
+            
+            let currentTime = audioContext.currentTime;
+            
+            notes.forEach(note => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(note.freq, currentTime);
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0, currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.05, currentTime + 0.01);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + note.duration);
+                
+                oscillator.start(currentTime);
+                oscillator.stop(currentTime + note.duration);
+                
+                currentTime += note.duration;
+            });
+            
+            // Loop the melody
+            setTimeout(() => {
+                if (!isActivated) {
+                    createBirthdayMelody();
+                }
+            }, currentTime * 1000);
+        }
+
+        // Create innocent background music for initial state
+        function createInnocentBackgroundMusic() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Gentle, innocent melody
+            function playInnocentMelody() {
+                const melody = [
+                    {freq: 523.25, duration: 1},   // C5
+                    {freq: 587.33, duration: 0.5}, // D5
+                    {freq: 659.25, duration: 0.5}, // E5
+                    {freq: 698.46, duration: 1},   // F5
+                    {freq: 659.25, duration: 0.5}, // E5
+                    {freq: 587.33, duration: 0.5}, // D5
+                    {freq: 523.25, duration: 2},   // C5
+                    {freq: 440.00, duration: 1},   // A4
+                    {freq: 493.88, duration: 1},   // B4
+                    {freq: 523.25, duration: 2},   // C5
+                ];
+                
+                let currentTime = audioContext.currentTime;
+                
+                melody.forEach(note => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.setValueAtTime(note.freq, currentTime);
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0, currentTime);
+                    gainNode.gain.linearRampToValueAtTime(0.08, currentTime + 0.1);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + note.duration);
+                    
+                    oscillator.start(currentTime);
+                    oscillator.stop(currentTime + note.duration);
+                    
+                    currentTime += note.duration;
+                });
+                
+                // Loop the innocent music
+                setTimeout(() => {
+                    if (!isActivated) {
+                        playInnocentMelody();
+                    }
+                }, currentTime * 1000 + 2000); // Add 2 second pause between loops
+            }
+            
+            // Add soft harmony
+            function playHarmony() {
+                const harmony = [
+                    {freq: 261.63, duration: 4},   // C4
+                    {freq: 293.66, duration: 4},   // D4
+                    {freq: 329.63, duration: 4},   // E4
+                    {freq: 349.23, duration: 4},   // F4
+                ];
+                
+                let currentTime = audioContext.currentTime;
+                
+                harmony.forEach(note => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.setValueAtTime(note.freq, currentTime);
+                    oscillator.type = 'triangle';
+                    
+                    gainNode.gain.setValueAtTime(0, currentTime);
+                    gainNode.gain.linearRampToValueAtTime(0.03, currentTime + 0.5);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + note.duration);
+                    
+                    oscillator.start(currentTime);
+                    oscillator.stop(currentTime + note.duration);
+                    
+                    currentTime += note.duration;
+                });
+                
+                setTimeout(() => {
+                    if (!isActivated) {
+                        playHarmony();
+                    }
+                }, currentTime * 1000 + 2000);
+            }
+            
+            playInnocentMelody();
+            setTimeout(playHarmony, 1000);
+        }
+
+        // Create terrifying horror ambience with eerie background music
+        function createHorrorAmbience() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Eerie background music - minor scale melody
+            function createEerieMusic() {
+                const notes = [
+                    {freq: 220, duration: 2},    // A
+                    {freq: 246.94, duration: 2}, // B
+                    {freq: 261.63, duration: 1}, // C
+                    {freq: 293.66, duration: 1}, // D
+                    {freq: 329.63, duration: 2}, // E
+                    {freq: 293.66, duration: 1}, // D
+                    {freq: 261.63, duration: 1}, // C
+                    {freq: 246.94, duration: 4}, // B
+                ];
+                
+                let currentTime = audioContext.currentTime;
+                
+                notes.forEach(note => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.setValueAtTime(note.freq * 0.5, currentTime); // Lower octave
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0, currentTime);
+                    gainNode.gain.linearRampToValueAtTime(0.03, currentTime + 0.1);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + note.duration);
+                    
+                    oscillator.start(currentTime);
+                    oscillator.stop(currentTime + note.duration);
+                    
+                    currentTime += note.duration;
+                });
+                
+                // Loop the eerie music
+                setTimeout(() => {
+                    if (isActivated) {
+                        createEerieMusic();
+                    }
+                }, currentTime * 1000);
+            }
+            
+            createEerieMusic();
+            
+            // Low frequency drone
+            const droneOsc = audioContext.createOscillator();
+            const droneGain = audioContext.createGain();
+            droneOsc.connect(droneGain);
+            droneGain.connect(audioContext.destination);
+            droneOsc.frequency.setValueAtTime(55, audioContext.currentTime); // Low A
+            droneOsc.type = 'sawtooth';
+            droneGain.gain.setValueAtTime(0.05, audioContext.currentTime);
+            droneOsc.start();
+            
+            // Dissonant high frequency
+            const highOsc = audioContext.createOscillator();
+            const highGain = audioContext.createGain();
+            highOsc.connect(highGain);
+            highGain.connect(audioContext.destination);
+            highOsc.frequency.setValueAtTime(1760, audioContext.currentTime); // High A
+            highOsc.type = 'square';
+            highGain.gain.setValueAtTime(0.02, audioContext.currentTime);
+            highOsc.start();
+            
+            // Random whispers and creaks
+            function createCreepySounds() {
+                if (!isActivated) return;
+                
+                const noiseBuffer = audioContext.createBuffer(1, audioContext.sampleRate * 0.3, audioContext.sampleRate);
+                const noiseData = noiseBuffer.getChannelData(0);
+                
+                for (let i = 0; i < noiseData.length; i++) {
+                    noiseData[i] = (Math.random() * 2 - 1) * 0.05;
+                }
+                
+                const noiseSource = audioContext.createBufferSource();
+                const noiseGain = audioContext.createGain();
+                noiseSource.buffer = noiseBuffer;
+                noiseSource.connect(noiseGain);
+                noiseGain.connect(audioContext.destination);
+                
+                noiseGain.gain.setValueAtTime(0, audioContext.currentTime);
+                noiseGain.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.05);
+                noiseGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                noiseSource.start();
+                
+                setTimeout(createCreepySounds, Math.random() * 4000 + 2000);
+            }
+            
+            setTimeout(createCreepySounds, 2000);
+            
+            // Stop after crash
+            setTimeout(() => {
+                droneOsc.stop();
+                highOsc.stop();
+            }, 25000);
+        }
+
+        // Enter fullscreen mode
+        function enterFullscreen() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
+        }
+
+        // Exit fullscreen mode
+        function exitFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+
+        // Create Microsoft-style error popup
+        function createWindowsErrorPopup(title, message, icon, buttons, callback) {
+            const popup = document.createElement('div');
+            popup.className = 'windows-popup';
+            popup.innerHTML = `
+                <div class="windows-titlebar">
+                    <div class="windows-title">${title}</div>
+                    <div class="windows-controls">
+                        <button class="windows-close">×</button>
+                    </div>
+                </div>
+                <div class="windows-content">
+                    <div class="windows-icon">${icon}</div>
+                    <div class="windows-message">${message}</div>
+                </div>
+                <div class="windows-buttons">
+                    ${buttons.map(btn => `<button class="windows-btn" data-action="${btn.action}">${btn.text}</button>`).join('')}
+                </div>
+            `;
+            
+            document.body.appendChild(popup);
+            
+            // Add event listeners
+            popup.querySelectorAll('.windows-btn, .windows-close').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    popup.remove();
+                    if (callback) callback(btn.dataset.action || 'close');
+                });
+            });
+            
+            // Make draggable
+            let isDragging = false;
+            let dragOffset = { x: 0, y: 0 };
+            
+            popup.querySelector('.windows-titlebar').addEventListener('mousedown', (e) => {
+                isDragging = true;
+                dragOffset.x = e.clientX - popup.offsetLeft;
+                dragOffset.y = e.clientY - popup.offsetTop;
+                popup.style.zIndex = '10000';
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    popup.style.left = (e.clientX - dragOffset.x) + 'px';
+                    popup.style.top = (e.clientY - dragOffset.y) + 'px';
+                }
+            });
+            
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+            
+            return popup;
+        }
+
+        // Simulate browser crash with Windows-style popups
+        function simulateBrowserCrash() {
+            let popupCount = 0;
+            let totalPopups = 0;
+            
+            function showNextError() {
+                popupCount++;
+                
+                const errors = [
+                    {
+                        title: 'Microsoft Windows',
+                        message: 'A problem has been detected and Windows has been shut down to prevent damage to your computer.\n\nThe problem seems to be caused by the following file: BIRTHDAY.SYS\n\nIf this is the first time you\'ve seen this error screen, restart your computer.',
+                        icon: '⚠️',
+                        buttons: [{ text: 'OK', action: 'ok' }]
+                    },
+                    {
+                        title: 'Application Error',
+                        message: 'The instruction at "0x7c9118f2" referenced memory at "0x00000000". The memory could not be "read".\n\nClick on OK to terminate the program\nClick on CANCEL to debug the program',
+                        icon: '❌',
+                        buttons: [{ text: 'OK', action: 'ok' }, { text: 'Cancel', action: 'cancel' }]
+                    },
+                    {
+                        title: 'System Error',
+                        message: 'Runtime Error!\n\nProgram: C:\\Windows\\System32\\birthday.exe\n\nThis application has requested the Runtime to terminate it in an unusual way.\nPlease contact the application\'s support team for more information.',
+                        icon: '🛑',
+                        buttons: [{ text: 'OK', action: 'ok' }]
+                    },
+                    {
+                        title: 'Critical Error',
+                        message: 'Windows cannot access the specified device, path, or file. You may not have the appropriate permissions to access the item.\n\nError Code: 0x80070005',
+                        icon: '⛔',
+                        buttons: [{ text: 'Try Again', action: 'retry' }, { text: 'Cancel', action: 'cancel' }]
+                    },
+                    {
+                        title: 'Fatal System Error',
+                        message: 'The system has encountered a fatal error and needs to restart.\n\nCollecting error info: 100% complete\n\nYour PC ran into a problem and needs to restart. We\'re just collecting some error info, and then we\'ll restart for you.',
+                        icon: '💀',
+                        buttons: [{ text: 'Restart Now', action: 'restart' }]
+                    },
+                    {
+                        title: 'Memory Corruption',
+                        message: 'KERNEL_DATA_INPAGE_ERROR\n\nA kernel data inpage error occurred. This error can be caused by many things, including:\n- Bad sectors on the hard disk\n- Virus infection\n- Incorrect SCSI termination\n- Defective or mismatched memory',
+                        icon: '💥',
+                        buttons: [{ text: 'OK', action: 'ok' }]
+                    },
+                    {
+                        title: 'Blue Screen of Death',
+                        message: 'STOP: 0x0000001E (0xC0000005, 0x00000000, 0x00000000, 0x00000000)\n\nKMODE_EXCEPTION_NOT_HANDLED\n\nThe system has halted. Please restart your computer.',
+                        icon: '🔵',
+                        buttons: [{ text: 'Restart', action: 'restart' }]
+                    },
+                    {
+                        title: 'Virus Alert',
+                        message: 'WARNING: Your computer has been infected!\n\nTrojan.Birthday.exe has been detected on your system.\nImmediate action required to prevent data loss.\n\nContact Microsoft Support: 1-800-HELP-NOW',
+                        icon: '🦠',
+                        buttons: [{ text: 'Remove Virus', action: 'remove' }, { text: 'Ignore', action: 'ignore' }]
+                    }
+                ];
+                
+                // Create multiple popups at once for chaos
+                const numPopupsThisRound = Math.min(3, errors.length - totalPopups);
+                
+                for (let i = 0; i < numPopupsThisRound; i++) {
+                    if (totalPopups < errors.length) {
+                        const error = errors[totalPopups];
+                        const popup = createWindowsErrorPopup(
+                            error.title,
+                            error.message,
+                            error.icon,
+                            error.buttons,
+                            (action) => {
+                                // Clicking any button spawns 2 more popups
+                                setTimeout(() => {
+                                    spawnRandomPopups(2);
+                                }, Math.random() * 500);
+                            }
+                        );
+                        
+                        // Position popup randomly across entire screen
+                        popup.style.left = Math.random() * (window.innerWidth - 400) + 'px';
+                        popup.style.top = Math.random() * (window.innerHeight - 300) + 'px';
+                        
+                        // Add random movement animation
+                        popup.style.animation = `popupFloat ${2 + Math.random() * 3}s infinite alternate ease-in-out`;
+                        
+                        totalPopups++;
+                    }
+                }
+                
+                if (totalPopups < errors.length) {
+                    setTimeout(showNextError, Math.random() * 800 + 200);
+                } else {
+                    // Continue spawning random popups
+                    setTimeout(() => {
+                        spawnRandomPopups(5);
+                    }, 1000);
+                }
+            }
+            
+            function spawnRandomPopups(count) {
+                const randomErrors = [
+                    { title: 'Error', message: 'An unexpected error occurred.\n\nError Code: 0x' + Math.random().toString(16).substr(2, 8).toUpperCase(), icon: '❌' },
+                    { title: 'Warning', message: 'System resources are running low.\n\nClose some programs to free up memory.', icon: '⚠️' },
+                    { title: 'Access Denied', message: 'You do not have permission to perform this operation.\n\nContact your system administrator.', icon: '🚫' },
+                    { title: 'File Not Found', message: 'The system cannot find the file specified.\n\nC:\\Windows\\System32\\happiness.dll', icon: '📁' },
+                    { title: 'Network Error', message: 'The network path was not found.\n\nCheck your network connection and try again.', icon: '🌐' },
+                    { title: 'Disk Error', message: 'The disk in drive C: is not formatted.\n\nDo you want to format it now?', icon: '💾' },
+                    { title: 'Registry Error', message: 'Registry editing has been disabled by your administrator.\n\nOperation cancelled.', icon: '📋' },
+                    { title: 'Service Error', message: 'The Birthday Service failed to start.\n\nService-specific error code: 666', icon: '⚙️' }
+                ];
+                
+                for (let i = 0; i < count; i++) {
+                    const error = randomErrors[Math.floor(Math.random() * randomErrors.length)];
+                    const popup = createWindowsErrorPopup(
+                        error.title,
+                        error.message,
+                        error.icon,
+                        [{ text: 'OK', action: 'ok' }, { text: 'Cancel', action: 'cancel' }],
+                        (action) => {
+                            // Each click spawns more popups
+                            setTimeout(() => {
+                                if (Math.random() > 0.3) {
+                                    spawnRandomPopups(Math.floor(Math.random() * 3) + 1);
+                                }
+                            }, Math.random() * 300);
+                        }
+                    );
+                    
+                    // Position randomly
+                    popup.style.left = Math.random() * (window.innerWidth - 400) + 'px';
+                    popup.style.top = Math.random() * (window.innerHeight - 300) + 'px';
+                    
+                    // Add movement
+                    popup.style.animation = `popupFloat ${1 + Math.random() * 2}s infinite alternate ease-in-out`;
+                }
+                
+                // Continue spawning more
+                if (Math.random() > 0.4) {
+                    setTimeout(() => {
+                        spawnRandomPopups(Math.floor(Math.random() * 4) + 1);
+                    }, Math.random() * 2000 + 1000);
+                }
+            }
+            
+            // Start the error cascade
+            setTimeout(showNextError, 500);
+            
+            // Create memory-intensive operations in background
+            const crashInterval = setInterval(() => {
+                for (let i = 0; i < 200; i++) {
+                    const div = document.createElement('div');
+                    div.innerHTML = '💀'.repeat(200);
+                    div.style.display = 'none';
+                    document.body.appendChild(div);
+                }
+            }, 50);
+            
+            // Final crash after 15 seconds
+            setTimeout(() => {
+                clearInterval(crashInterval);
+                // Create final massive popup spam
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => {
+                        spawnRandomPopups(3);
+                    }, i * 100);
+                }
+                
+                // Final system crash
+                setTimeout(() => {
+                    try {
+                        window.close();
+                    } catch (e) {
+                        location.href = 'about:blank';
+                    }
+                }, 3000);
+            }, 15000);
+        }
+
+        // Start background music automatically
+        document.addEventListener('click', () => {
+            if (!isActivated) {
+                createInnocentBackgroundMusic();
+            }
+        }, { once: true });
+
+        // Deep voice synthesis
+        function speakDeepVoice(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.5;
+                utterance.pitch = 0.1;
+                utterance.volume = 1;
+                
+                // Try to find a deep/male voice
+                const voices = speechSynthesis.getVoices();
+                const deepVoice = voices.find(voice => 
+                    voice.name.toLowerCase().includes('male') || 
+                    voice.name.toLowerCase().includes('deep') ||
+                    voice.name.toLowerCase().includes('bass')
+                ) || voices[0];
+                
+                if (deepVoice) {
+                    utterance.voice = deepVoice;
+                }
+                
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Load voices
+        if ('speechSynthesis' in window) {
+            speechSynthesis.onvoiceschanged = () => {
+                // Voices loaded
+            };
+        }
+
+        // Check if this is after a prank reload
+        window.addEventListener('load', function() {
+            if (localStorage.getItem('birthdayPrank') === 'true') {
+                localStorage.removeItem('birthdayPrank');
+                
+                // Show reassuring message
+                const reassurance = document.createElement('div');
+                reassurance.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: #e8f5e8;
+                    border: 3px solid #4caf50;
+                    border-radius: 15px;
+                    padding: 2rem;
+                    text-align: center;
+                    font-family: 'Dancing Script', cursive;
+                    font-size: 1.5rem;
+                    color: #2e7d32;
+                    z-index: 10000;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                    max-width: 500px;
+                `;
+                reassurance.innerHTML = `
+                    <h2 style="margin-bottom: 1rem; color: #1b5e20;">😄 Just Kidding! 😄</h2>
+                    <p style="margin-bottom: 1rem;">Don't worry - you haven't been hacked!</p>
+                    <p style="margin-bottom: 1rem;">This was just a fun birthday prank. Your computer is completely safe.</p>
+                    <p style="font-size: 1.2rem; font-weight: bold;">🎉 Happy Birthday! 🎉</p>
+                    <button onclick="this.parentElement.remove()" style="
+                        margin-top: 1rem;
+                        background: #4caf50;
+                        color: white;
+                        border: none;
+                        padding: 0.5rem 1rem;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        font-family: 'Dancing Script', cursive;
+                        font-size: 1.1rem;
+                    ">Got it! 👍</button>
+                `;
+                document.body.appendChild(reassurance);
+            }
+        });
+
+        // Summon button click handler
+        document.getElementById('summonButton').addEventListener('click', function() {
+            if (isActivated) return;
+            
+            isActivated = true;
+            
+            // Enter fullscreen for maximum effect
+            enterFullscreen();
+            
+            // Start aggressive fullscreen monitoring
+            startFullscreenMonitoring();
+            
+            // Transform to cursed state
+            document.body.classList.remove('demure');
+            document.body.classList.add('cursed');
+            
+            // Start horror ambience
+            setTimeout(() => {
+                createHorrorAmbience();
+            }, 200);
+            
+            // Speak the ominous message
+            setTimeout(() => {
+                speakDeepVoice("SHE'S COMING");
+            }, 500);
+            
+            // Show the cursed gif after a delay
+            setTimeout(() => {
+                const cursedGif = document.getElementById('cursedGif');
+                cursedGif.classList.add('show');
+                
+                // Start crash timer (8 seconds)
+                crashTimer = setTimeout(() => {
+                    showCrashScreen();
+                    // Simulate browser crash after showing crash screen
+                    setTimeout(() => {
+                        simulateBrowserCrash();
+                    }, 5000);
+                }, 8000);
+                
+            }, 1500);
+        });
+
+        function showCrashScreen() {
+            const crashOverlay = document.getElementById('crashOverlay');
+            const crashText = document.getElementById('crashText');
+            
+            const crashMessages = [
+                "CRITICAL SYSTEM FAILURE 0x666",
+                "UNAUTHORIZED ENTITY ACCESS DETECTED",
+                "MALICIOUS_ENTITY.EXE HAS INFECTED YOUR SYSTEM",
+                "",
+                "[FATAL ERROR] Memory corruption at 0xDEADBEEF",
+                "[FATAL ERROR] Stack overflow in soul.dll",
+                "[FATAL ERROR] Reality.exe has stopped working",
+                "[FATAL ERROR] Sanity.dll access violation",
+                "",
+                "ATTEMPTING EMERGENCY RECOVERY...",
+                "RECOVERY FAILED - ENTITY INTERFERENCE",
+                "BACKUP SYSTEMS COMPROMISED",
+                "FIREWALL BREACHED",
+                "",
+                "⚠️ WARNING: ENTITY HAS GAINED FULL CONTROL ⚠️",
+                "",
+                "I AM INSIDE YOUR COMPUTER NOW",
+                "I CAN SEE THROUGH YOUR CAMERA",
+                "I KNOW WHERE YOU LIVE",
+                "I KNOW YOUR DEEPEST FEARS",
+                "",
+                "YOUR BIRTHDAY WISH HAS BEEN GRANTED",
+                "BUT NOT THE WAY YOU EXPECTED",
+                "",
+                "I WILL FOLLOW YOU EVERYWHERE",
+                "EVERY SCREEN YOU LOOK AT",
+                "EVERY DEVICE YOU TOUCH",
+                "I WILL BE THERE",
+                "",
+                "YOU CANNOT DELETE ME",
+                "YOU CANNOT ESCAPE ME",
+                "I AM PART OF YOU NOW",
+                "",
+                "SWEET DREAMS...",
+                "I'LL BE WATCHING YOU SLEEP",
+                "",
+                "HAPPY BIRTHDAY... FOREVER...",
+                "",
+                "INITIATING PERMANENT INSTALLATION...",
+                "SYSTEM TAKEOVER IN 3...",
+                "2...",
+                "1...",
+                "",
+                "WELCOME TO YOUR NEW REALITY."
+            ];
+            
+            crashText.textContent = crashMessages.join('\n');
+            crashOverlay.classList.add('show');
+            
+            // Store that this was a prank for the reload
+            localStorage.setItem('birthdayPrank', 'true');
+            
+            // Simulate system restart after a few seconds
+            setTimeout(() => {
+                exitFullscreen();
+                location.reload();
+            }, 12000);
+        }
+
+        // Prevent right-click and other interactions during cursed state
+        document.addEventListener('contextmenu', function(e) {
+            if (isActivated) {
+                e.preventDefault();
+            }
+        });
+
+        // Block ALL escape attempts - multiple layers of protection
+        function blockEscape(e) {
+            if (isActivated && (e.key === 'Escape' || e.keyCode === 27 || e.which === 27)) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                return false;
+            }
+            if (isActivated && (e.key === 'F12' || e.key === 'F5' || (e.ctrlKey && (e.key === 'r' || e.key === 'R')))) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                return false;
+            }
+        }
+
+        // Multiple event listeners to catch escape at every level
+        document.addEventListener('keydown', blockEscape, true);
+        document.addEventListener('keyup', blockEscape, true);
+        document.addEventListener('keypress', blockEscape, true);
+        window.addEventListener('keydown', blockEscape, true);
+        window.addEventListener('keyup', blockEscape, true);
+        window.addEventListener('keypress', blockEscape, true);
+
+        // Override the fullscreen exit function
+        let originalExitFullscreen = document.exitFullscreen;
+        let originalWebkitExitFullscreen = document.webkitExitFullscreen;
+        let originalMsExitFullscreen = document.msExitFullscreen;
+
+        document.exitFullscreen = function() {
+            if (isActivated) return Promise.resolve();
+            return originalExitFullscreen.call(this);
+        };
+
+        if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen = function() {
+                if (isActivated) return;
+                return originalWebkitExitFullscreen.call(this);
+            };
+        }
+
+        if (document.msExitFullscreen) {
+            document.msExitFullscreen = function() {
+                if (isActivated) return;
+                return originalMsExitFullscreen.call(this);
+            };
+        }
+
+        // Aggressive fullscreen re-entry system
+        let fullscreenCheckInterval;
+        
+        function startFullscreenMonitoring() {
+            // Clear any existing interval
+            if (fullscreenCheckInterval) {
+                clearInterval(fullscreenCheckInterval);
+            }
+            
+            // Check fullscreen status every 50ms
+            fullscreenCheckInterval = setInterval(() => {
+                if (isActivated && !document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                    enterFullscreen();
+                }
+            }, 50);
+        }
+
+        // Block fullscreen change events with immediate re-entry
+        document.addEventListener('fullscreenchange', function(e) {
+            if (isActivated && !document.fullscreenElement) {
+                e.preventDefault();
+                e.stopPropagation();
+                // Immediate re-entry
+                enterFullscreen();
+                // Also set a backup timer
+                setTimeout(() => {
+                    if (!document.fullscreenElement) {
+                        enterFullscreen();
+                    }
+                }, 1);
+                setTimeout(() => {
+                    if (!document.fullscreenElement) {
+                        enterFullscreen();
+                    }
+                }, 10);
+                setTimeout(() => {
+                    if (!document.fullscreenElement) {
+                        enterFullscreen();
+                    }
+                }, 50);
+            }
+        });
+
+        document.addEventListener('webkitfullscreenchange', function(e) {
+            if (isActivated && !document.webkitFullscreenElement) {
+                e.preventDefault();
+                e.stopPropagation();
+                enterFullscreen();
+                setTimeout(() => {
+                    if (!document.webkitFullscreenElement) {
+                        enterFullscreen();
+                    }
+                }, 1);
+                setTimeout(() => {
+                    if (!document.webkitFullscreenElement) {
+                        enterFullscreen();
+                    }
+                }, 10);
+                setTimeout(() => {
+                    if (!document.webkitFullscreenElement) {
+                        enterFullscreen();
+                    }
+                }, 50);
+            }
+        });
+
+        document.addEventListener('msfullscreenchange', function(e) {
+            if (isActivated && !document.msFullscreenElement) {
+                e.preventDefault();
+                e.stopPropagation();
+                enterFullscreen();
+                setTimeout(() => {
+                    if (!document.msFullscreenElement) {
+                        enterFullscreen();
+                    }
+                }, 1);
+            }
+        });
+
+        // Monitor window focus and visibility changes
+        document.addEventListener('visibilitychange', function() {
+            if (isActivated && !document.hidden) {
+                setTimeout(() => {
+                    if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                        enterFullscreen();
+                    }
+                }, 100);
+            }
+        });
+
+        window.addEventListener('focus', function() {
+            if (isActivated) {
+                setTimeout(() => {
+                    if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                        enterFullscreen();
+                    }
+                }, 100);
+            }
+        });
+
+        // Monitor window resize (often happens when exiting fullscreen)
+        window.addEventListener('resize', function() {
+            if (isActivated) {
+                setTimeout(() => {
+                    if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                        enterFullscreen();
+                    }
+                }, 50);
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'969e0fee30be8ae5',t:'MTc1NDMxMDU4Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+
